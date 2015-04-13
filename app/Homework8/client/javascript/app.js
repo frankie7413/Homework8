@@ -50,12 +50,14 @@ var main = function() {
 
 function getTopList() {
 	$.getJSON("/getList", function (data){
-		var i;
+		var i, shrink;
 		$("#visit").empty();
 		var $result = $("<ol>");
 		//$("#visit").append($result);
 		for(i = 0; i < data.length; i++){
-			$result.append($("<li>").text("URL: " + data[i].short + " Views: " + data[i].count));
+			shrink = data[i].short;
+			shrink = shrink.replace("localhost:3000", "");
+			$result.append("<li><a href = "+ shrink + "> URL: " + data[i].short + "</a> " + " Views: " + data[i].count + "</li>");
 		}
 		$("#visit").append($result);
 	});
