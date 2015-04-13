@@ -5,7 +5,6 @@ var main = function() {
         index,
         userUrl;
 
-
     //parse the json string to be able to get or to link to long url 
     function checkinput (link) {
         index = link.indexOf("localhost:3000");
@@ -17,6 +16,9 @@ var main = function() {
 
         return link;
     }
+
+    getTopList();
+
 
     $("#button").click(function() {
         url = $("#url").val();
@@ -44,23 +46,20 @@ var main = function() {
         }
     });
 
-    setInterval(function(){ 
-        $('#visit').empty();
-        $.ajax({
-            url:"/getList",
-            error : function () {
-
-            },dataType: "json",
-            success: function (reply) {
-                var data = JSON.parse(reply);
-                var i;
-                for (i = 0; i < reply.length; i++) {
-                    $("#visit").append("<p>Number: "+ (i + 1) +"</p>");
-                    $("#visit").append($('<p>')).text("Url: "+ reply[i].short + "Views: " + reply[i].count);
-                }
-        },type: "GET"
-    })}, 5000);
-
 };
+
+function getTopList() {
+	$.getJSON("/getList", function (data){
+		var i;
+		$("#visit").empty();
+		var $result = $("<ol>");
+		//$("#visit").append($result);
+		for(i = 0; i < data.length; i++){
+			$result.append($("<li>").text("URL: " + data[i].short + " Views: " + data[i].count));
+		}
+		$("#visit").append($result);
+	});
+}
+
 
 $(document).ready(main);

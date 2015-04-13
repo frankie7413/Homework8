@@ -139,24 +139,17 @@ app.post("/geturl", function (req, res) {
 });
 
 
-//sends user to long url & increments views 
-//should update views of data on redis and send user to original url 
-//http://expressjs.com/api.html
-app.get("/:url", function (req, res){
-	//search for short in db increment view count & redirect to page
-	var shorturl = req.params.url;
-	shorturl = "localhost:3000/" + shorturl;
-	console.log("GET: Calling fowardURL " + shorturl); 
-	connDB(fowardURL, shorturl, res);
+app.get("/*", function (req, res){
+	if(req.param(0) === "getList") {
+		console.log("GET: getList");
+		connDB(getTopList, 0, res);
+	}
+	else {
+		var shorturl = "localhost:3000/" + req.param(0);
+		console.log("GET: Calling fowardURL " + shorturl);
+		connDB(fowardURL, shorturl, res);
+	}
 });
-
-
-//gets top urls visited 
-app.get("/getList", function (req, res){
-	connDB(getTopList, 0, res);
-	//return top 10
-});
-
 
 
 console.log("Server is listening at localhost:3000");
