@@ -1,6 +1,6 @@
 var express = require("express"),
 	http = require("http"),
-	mongoose = require("mongodb"),
+	mongodb = require("mongodb"),
 	bodyParser = require('body-parser'),
 	app = express(),
 	mongodbClient;
@@ -33,8 +33,8 @@ function connDB(proccess, url, res) {
 //insert longurls db
 var insertDB = function(collection, longurl, res) {
 	var shorturl, schema;
+
 	shorturl = randomURL();
-	longurl = "https://" + longurl;
 	schema = {long: longurl, short: shorturl, count: 0};
 
 	//enter into db
@@ -44,14 +44,14 @@ var insertDB = function(collection, longurl, res) {
 			return;
 		}
 		else{
-			res.json("url": shorturl);
+			res.json({"url":shorturl});
 		}
 	});
 } 
 
 //search for item in db
 var findURL = function(collection, url, res) {
-	var index = url.indexOf("localhost:3000");
+	var index = url.indexOf("localhost:3000/");
 	//if url is a short url find long
 	if(index > -1){
 		collection.findOne({short : url}, function(err, item){
@@ -59,7 +59,7 @@ var findURL = function(collection, url, res) {
 				console.log("Error " + err);
 				return;
 			}
-			else if(item != null){
+			else if(item !== null){
 				res.json({"url":item.long});
 			}
 			else{
@@ -68,12 +68,13 @@ var findURL = function(collection, url, res) {
 		});
 	} 
 	else {
+		url = "https://" + url;
 		collection.findOne({long: url}, function(err, item){
 			if(err){
 				cosole.log("Error " + err);
 				return;
 			}
-			else if(item != null){
+			else if(item !== null){
 				//return short url from long url 
 				res.json({"url": item.short});
 			}
@@ -87,20 +88,36 @@ var findURL = function(collection, url, res) {
 
 var getTopList = function(collection, url, res) {
 	collection.aggregate([
-		//sort
+		//sorting entries 
 		{$sort: {count: -1}},
 
-		//get top ten
+		//only get the top 10 urls
 		{$limit: 10}
 	], function(err, topten) {
 		if (topten !== null) {
-			//return top ten
+			//return top ten to app.js
 			res.json(topten);
 		}
 	});
 };
 
+function fowardURL(collection, url, res){
+	console.log("GET:Foward URL");
 
+	collection.findOne({short: url}, function(err, item){
+		if(err){
+			console.log("Error :" + err);
+		}
+		else if(item !== null) {
+			collection.update({short : url}, {$inc: {count: 1}});
+			res.redirect(item.long);
+		}
+		else{
+			res.redirect("localhost:3000"); //stay at page since short does not exist 
+		}
+	});
+
+}
 
 //create db 
 mongodbClient = mongodb.MongoClient;
@@ -117,9 +134,8 @@ app.use(bodyParser.urlencoded({ extended: false }));
 //when person enters url check if it exist or is a shortened url or new url to shorten
 app.post("/geturl", function (req, res) {
 	var posturl = req.body.url0;
-
-	console.log("geturl called suces");
-
+	connDB(findURL, posturl, res);
+	console.log("POst: geturl called suces");
 });
 
 
@@ -127,12 +143,17 @@ app.post("/geturl", function (req, res) {
 //should update views of data on redis and send user to original url 
 //http://expressjs.com/api.html
 app.get("/:url", function (req, res){
-	//search for short in db increment view count & redirect to page 
+	//search for short in db increment view count & redirect to page
+	var shorturl = req.params.url;
+	shorturl = "localhost:3000/" + shorturl;
+	console.log("GET: Calling fowardURL " + shorturl); 
+	connDB(fowardURL, shorturl, res);
 });
 
 
 //gets top urls visited 
-app.post("/getList", function (req, res){
+app.get("/getList", function (req, res){
+	connDB(getTopList, 0, res);
 	//return top 10
 });
 

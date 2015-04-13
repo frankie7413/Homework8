@@ -54,9 +54,9 @@ var main = function() {
             success: function (reply) {
                 var data = JSON.parse(reply);
                 var i;
-                for (i = 0; i < 10; i++) {
+                for (i = 0; i < reply.length; i++) {
                     $("#visit").append("<p>Number: "+ (i + 1) +"</p>");
-                    $("#visit").append($('<p>')).append(data[i]);
+                    $("#visit").append($('<p>')).text("Url: "+ reply[i].short + "Views: " + reply[i].count);
                 }
         },type: "GET"
     })}, 5000);
