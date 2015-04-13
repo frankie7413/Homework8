@@ -1,8 +1,10 @@
 {
- "name" : "Homework8" ,
- "description" : "URL Shortener" ,
- "version" : "0.0.1" ,
- "dependencies" : {
- "mongoose" : "3.6.x"
- }
+  "name": "Homework8",
+  "version": "0.0.1",
+  "description": "URL Shortener",
+  "dependencies": {
+    "express": "4.9.x",
+    "mongodb": "~2.0",
+    "body-parser": "^1.8.1"
+  }
 }

@@ -58,7 +58,7 @@ var main = function() {
                     $("#visit").append("<p>Number: "+ (i + 1) +"</p>");
                     $("#visit").append($('<p>')).append(data[i]);
                 }
-        },type: "post"
+        },type: "GET"
     })}, 5000);
 
 };
