@@ -17,7 +17,13 @@ var main = function() {
         return link;
     }
 
-    getTopList();
+    //call every 5 seconds 
+    //http://www.sitepoint.com/setinterval-example/
+    setInterval(function() {
+    	getTopList();
+    }, 5000);
+
+    //getTopList();
 
 
     $("#button").click(function() {

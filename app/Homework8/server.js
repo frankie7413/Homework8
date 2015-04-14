@@ -47,7 +47,7 @@ var insertDB = function(collection, longurl, res) {
 			res.json({"url":shorturl});
 		}
 	});
-} 
+}; 
 
 //search for item in db
 var findURL = function(collection, url, res) {
@@ -84,7 +84,7 @@ var findURL = function(collection, url, res) {
 			}
 		});
 	}
-}
+};
 
 var getTopList = function(collection, url, res) {
 	collection.aggregate([
